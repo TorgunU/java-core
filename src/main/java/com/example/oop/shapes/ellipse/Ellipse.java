@@ -3,27 +3,26 @@ package com.example.oop.shapes.ellipse;
 import com.example.oop.shapes.Shape;
 
 public class Ellipse extends Shape {
-    private double largeSemiAxis;
-    private double smallSemiAxis;
+    private double axisX;
+    private double axisY;
 
-    public Ellipse(double largeSemiAxis, double smallSemiAxis) {
-        this.largeSemiAxis = largeSemiAxis;
-        this.smallSemiAxis = smallSemiAxis;
+    public Ellipse(double axisX, double axisY) {
+        if (axisX <= 0 || axisY <= 0) {
+            throw new IllegalArgumentException("Сторона должна быть положительной.");
+        } else if (axisX < axisY) {
+            throw new IllegalArgumentException("Большая полуось эллипса не может быть меньше малой полуоси.");
+        }
+        this.axisX = axisX;
+        this.axisY = axisY;
     }
 
     @Override
     public double getArea() {
-        if (largeSemiAxis <= 0 || smallSemiAxis <= 0) {
-            throw new IllegalArgumentException("Сторона должна быть положительной.");
-        }
-        return Math.PI * largeSemiAxis * smallSemiAxis;
+        return Math.PI * axisX * axisY;
     }
 
     @Override
     public double getPerimeter() {
-        if (largeSemiAxis <= 0 || smallSemiAxis <= 0) {
-            throw new IllegalArgumentException("Сторона должна быть положительной.");
-        }
-        return 2 * Math.PI * largeSemiAxis;
+        return 2 * Math.PI * axisX;
     }
 }

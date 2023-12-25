@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TriangleTest {
     @Test
-    public void whenRectangleSides22ThenArea8() {
+    public void shouldCorrectCalculateArea() {
         Rectangle rectangle = new Rectangle(2, 4);
         double result = rectangle.getArea();
         double expected = 8;
@@ -16,7 +16,7 @@ class TriangleTest {
     }
 
     @Test
-    public void whenRectangleSides26ThenPerimeter8() {
+    public void shouldCorrectCalculatePerimeter() {
         Rectangle rectangle = new Rectangle(2, 6);
         double result = rectangle.getPerimeter();
         double expected = 16;
@@ -24,16 +24,11 @@ class TriangleTest {
     }
 
     @Test
-    public void whenRectangleSides20CalculatingAreaThenIllegalArgumentException() {
-        Rectangle rectangle = new Rectangle(2, 0);
-        Throwable exception = assertThrows(IllegalArgumentException.class, rectangle::getArea);
-        assertThat(exception.getMessage()).isEqualTo("Сторона Треугольника должна быть положительной.");
-    }
-
-    @Test
-    public void whenRectangleSides20CalculatingPerimeterThenIllegalArgumentException() {
-        Rectangle rectangle = new Rectangle(2, 0);
-        Throwable exception = assertThrows(IllegalArgumentException.class, rectangle::getPerimeter);
-        assertThat(exception.getMessage()).isEqualTo("Сторона Треугольника должна быть положительной.");
+    public void shouldThrowExceptionWhenIllegalSides() {
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+        {
+            Rectangle rectangle = new Rectangle(2, 0);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Сторона должна быть положительной.");
     }
 }

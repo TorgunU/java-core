@@ -14,44 +14,105 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        List<Shape> shapes = createRandomShapes();
-        printShapesSum(shapes);
+        int createCount = 10;
+        List<Shape> shapes = createRandomShapes(createCount);
+        sumShapes(shapes);
         sumTriangles(shapes);
         sumRectangles(shapes);
     }
 
-    private static List<Shape> createRandomShapes() {
-        List<Shape> shapes = new ArrayList<>();
-        Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            shapes.add(new Ellipse(
-                    random.nextDouble(2, 50),
-                    random.nextDouble(2, 50))
-            );
-            shapes.add(new Circle(random.nextDouble(2, 50)));
-            shapes.add(new Rectangle(
-                    random.nextDouble(2, 50),
-                    random.nextDouble(2, 50))
-            );
-            shapes.add(new Square(random.nextDouble(2, 50)));
-            shapes.add(new Triangle(
-                    random.nextDouble(2, 50),
-                    random.nextDouble(2, 50),
-                    random.nextDouble(2, 50)
-            ));
-            shapes.add(new RegularTriangle(random.nextDouble(2, 50)));
+    private static List<Triangle> createRandomTriangles(int count, Random random) {
+        List<Triangle> triangles = new ArrayList<>();
+        double sideA;
+        double sideB;
+        double minSideC;
+        double maxSideC;
+        double sideC;
+        for (int i = 0; i < count; i++) {
+            sideA = random.nextDouble(2, 50);
+            sideB = random.nextDouble(2, 50);
+            minSideC = Math.abs(sideA - sideB) + 1;
+            maxSideC = sideA + sideB - 1;
+            sideC = random.nextDouble(minSideC, maxSideC);
+            triangles.add(new Triangle(sideA, sideB, sideC));
         }
+        return triangles;
+    }
+
+    private static List<RegularTriangle> createRegularTriangle(int count, Random random) {
+        List<RegularTriangle> regularTriangles = new ArrayList<>();
+        double sideA;
+        for (int i = 0; i < count; i++) {
+            sideA = random.nextDouble(2, 50);
+            regularTriangles.add(new RegularTriangle(sideA));
+        }
+        return regularTriangles;
+    }
+
+    private static List<Ellipse> createRandomEllipses(int count, Random random) {
+        List<Ellipse> ellipses = new ArrayList<>();
+        double axisX;
+        double axisY;
+        for (int i = 0; i < count; i++) {
+            axisX = random.nextDouble(2, 50);
+            axisY = random.nextDouble(2, axisX);
+            ellipses.add(new Ellipse(axisX, axisY));
+        }
+        return ellipses;
+    }
+
+    private static List<Circle> createRandomCircles(int count, Random random) {
+        List<Circle> circles = new ArrayList<>();
+        double radius;
+        for (int i = 0; i < count; i++) {
+            radius = random.nextDouble(2, 50);
+            circles.add(new Circle(radius));
+        }
+        return circles;
+    }
+
+    private static List<Rectangle> createRandomRectangles(int count, Random random) {
+        List<Rectangle> rectangles = new ArrayList<>();
+        double sideA;
+        double sideB;
+        for (int i = 0; i < count; i++) {
+            sideA = random.nextDouble(2, 50);
+            sideB = random.nextDouble(2, 50);
+            rectangles.add(new Rectangle(sideA, sideB));
+        }
+        return rectangles;
+    }
+
+    private static List<Square> createRandomSquare(int count, Random random) {
+        List<Square> squares = new ArrayList<>();
+        double side;
+        for (int i = 0; i < count; i++) {
+            side = random.nextDouble(2, 50);
+            squares.add(new Square(side));
+        }
+        return squares;
+    }
+
+    private static List<Shape> createRandomShapes(int count) {
+        Random random = new Random();
+        List<Shape> shapes = new ArrayList<>();
+        shapes.addAll(createRandomTriangles(count, random));
+        shapes.addAll(createRegularTriangle(count, random));
+        shapes.addAll(createRandomEllipses(count, random));
+        shapes.addAll(createRandomCircles(count, random));
+        shapes.addAll(createRandomRectangles(count, random));
+        shapes.addAll(createRandomSquare(count, random));
         return shapes;
     }
 
-    private static void printShapesSum(List<Shape> shapes) {
-        System.out.println("Сумма всех фигур:");
+    private static void sumShapes(List<Shape> shapes) {
+        double areaSum = 0;
+        double perimeterSum = 0;
         for (Shape shape : shapes) {
-            System.out.printf("Площадь фигуры: %1$f. Периметр фигуры: %2$f2%n",
-                    shape.getArea(),
-                    shape.getPerimeter()
-            );
+            areaSum += shape.getArea();
+            perimeterSum += shape.getPerimeter();
         }
+        System.out.printf("Сумма периметров: %1$f. Сумма площадей: %2$f%n", perimeterSum, areaSum);
     }
 
     private static void sumShape(String shapeName, List<Shape> shapes) {
@@ -61,14 +122,14 @@ public class Main {
             perimeterSum += shape.getPerimeter();
             areaSum += shape.getArea();
         }
-        System.out.printf("Сумма периметров всех %s: %.2f. Сумма площадей всех %s: %.2f%n",
-                shapeName, perimeterSum, shapeName, areaSum);
+        System.out.printf("Сумма %s. Периметров %.2f. Площадей: %.2f%n",
+                shapeName, perimeterSum, areaSum);
     }
 
     private static void sumTriangles(List<Shape> shapes) {
         List<Shape> triangles = new ArrayList<>();
         for (Shape shape : shapes) {
-            if (shape.getClass() == Triangle.class) {
+            if (shape.getClass() == Triangle.class || shape.getClass() == RegularTriangle.class) {
                 triangles.add(shape);
             }
         }
@@ -78,7 +139,7 @@ public class Main {
     private static void sumRectangles(List<Shape> shapes) {
         List<Shape> rectangles = new ArrayList<>();
         for (Shape shape : shapes) {
-            if (shape.getClass() == Rectangle.class) {
+            if (shape.getClass() == Rectangle.class || shape.getClass() == Square.class) {
                 rectangles.add(shape);
             }
         }
