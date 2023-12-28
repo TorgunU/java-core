@@ -6,16 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserFile {
-    private String path;
-
-    public UserFile(String path) {
-        this.path = path;
-    }
+    private final static String READ_FILE_PATH
+            = "C:\\projects\\java-core\\src\\main\\java\\com\\example\\exceptions\\source.txt";
+    private final static String WRITE_FILE_PATH
+            = "C:\\projects\\java-core\\src\\main\\java\\com\\example\\exceptions\\destination.txt";
 
     public static List<String> readWithBufferedReader(String path) {
         List<String> readText = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(
-                new FileReader(path))) {
+                new FileReader(path, StandardCharsets.UTF_8))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 System.out.println(line);
@@ -31,7 +30,7 @@ public class UserFile {
 
     public static List<Character> readWithFileReader(String path) {
         List<Character> readText = new ArrayList<>();
-        try (FileReader fileReader = new FileReader(path)) {
+        try (FileReader fileReader = new FileReader(path, StandardCharsets.UTF_8)) {
             int ch;
             while ((ch = fileReader.read()) > 0) {
                 System.out.print((char) ch);
@@ -74,8 +73,6 @@ public class UserFile {
     }
 
     public static void main(String[] args) {
-        String readFilePath = "C:\\projects\\java-core\\src\\main\\java\\com\\example\\exceptions\\source.txt";
-        String writeFilePath = "C:\\projects\\java-core\\src\\main\\java\\com\\example\\exceptions\\destination.txt";
         String[] firstTextForWrite =
                 {
                         "Быть или не быть, вот в чем вопрос. Достойно ль\n"
@@ -84,8 +81,8 @@ public class UserFile {
                                 + "И в смертной схватке с целым морем бед\n"
                                 + "Покончить с ними? Умереть. Забыться."
                 };
-        writeWithFileWriter(writeFilePath, firstTextForWrite);
-        List<Character> firstText = readWithFileReader(readFilePath);
+        writeWithFileWriter(WRITE_FILE_PATH, firstTextForWrite);
+        List<Character> firstText = readWithFileReader(READ_FILE_PATH);
 
         System.out.println();
 
@@ -96,7 +93,7 @@ public class UserFile {
                                 + "Через \"не могу\", через вьюгу, через детский страх\n"
                                 + "Через нищету, через стресс, бедности овраг"
                 };
-        writeWithBufferedWriter(writeFilePath, secondTextToWrite);
-        List<String> secondText = readWithBufferedReader(readFilePath);
+        writeWithBufferedWriter(WRITE_FILE_PATH, secondTextToWrite);
+        List<String> secondText = readWithBufferedReader(READ_FILE_PATH);
     }
 }
