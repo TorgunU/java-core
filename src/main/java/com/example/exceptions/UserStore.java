@@ -39,8 +39,7 @@ public class UserStore {
             illegalArgumentException.printStackTrace();
         } catch (IllegalStateException illegalStateException) {
             illegalStateException.printStackTrace();
-        }
-        finally {
+        } finally {
             System.out.println("Список пользователей:");
             for (User user: users) {
                 System.out.println(user.toString());
