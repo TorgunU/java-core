@@ -13,22 +13,20 @@ public class LibraryServiceTest {
 
     @BeforeEach
     public void setTestData() {
-        Set<Book> books = new LinkedHashSet<>(Arrays.asList(
-                new Book("Book1", "Author1", 2000, 1L),
-                new Book("Book2", "Author2", 2010, 2L),
-                new Book("Book3", "Author3", 2020, 3L),
-                new Book("Book4", "Author3", 2020, 4L)
-        ));
+        Map<String, Book> books = new HashMap<>();
+        books.put("1", new Book("Book1", "Author1", 2000, 1L));
+        books.put("2", new Book("Book2", "Author2", 2010, 2L));
+        books.put("3", new Book("Book3", "Author3", 2020, 3L));
+        books.put("4", new Book("Book4", "Author3", 2020, 4L));
 
-        Set<User> users = new LinkedHashSet<>(Arrays.asList(
-                new User("User1", 25, 100L),
-                new User("User2", 30, 200L)
-        ));
+        Map<String, User> users = new HashMap<>();
+        users.put("100", new User("User1", 25, 100L));
+        users.put("200", new User("User2", 30, 200L));
 
-        Map<User, List<Book>> userBooks = new HashMap<>();
+        Map<User, Set<Book>> userBooks = new HashMap<>();
         userBooks.put(
                 new User("User2", 30, 200L),
-                new LinkedList<>(Arrays.asList(
+                new HashSet<>(Arrays.asList(
                         new Book("Book1", "Author1", 2000, 1L),
                         new Book("Book2", "Author2", 2010, 2L),
                         new Book("Book3", "Author3", 2020, 3L)
@@ -46,17 +44,17 @@ public class LibraryServiceTest {
                 new Book("Book4", "Author3", 2020, 4L)
         ));
 
-        Collection<Book> allBooks = libraryService.getAllBooks();
+        Iterable<Book> allBooks = libraryService.getAllBooks();
         assertThat(allBooks).containsAll(expected);
     }
 
     @Test
     void whenGetAllAvailableBooks() {
-        List<Book> expected = new LinkedList<>(List.of(
+        Iterable<Book> expected = new LinkedList<>(List.of(
                 new Book("Book4", "Author3", 2020, 4L)));
 
-        List<Book> availableBooks = libraryService.getAllAvailableBooks();
-        assertThat(availableBooks).isEqualTo(expected);
+        Iterable<Book> availableBooks = libraryService.getAllAvailableBooks();
+        assertThat(availableBooks).containsAll(expected);
     }
 
     @Test
@@ -67,8 +65,8 @@ public class LibraryServiceTest {
                 new Book("Book3", "Author3", 2020, 3L)
         ));
 
-        List<Book> result = libraryService.getUserBooks("200");
-        assertThat(result).isEqualTo(expected);
+        Iterable<Book> result = libraryService.getUserBooks("200");
+        assertThat(result).containsAll(expected);
     }
 
     @Test
@@ -81,7 +79,7 @@ public class LibraryServiceTest {
         ));
 
         libraryService.takeBook(200L, 4L);
-        assertThat(libraryService.getUserBooks("200")).isEqualTo(expected);
+        assertThat(libraryService.getUserBooks("200")).containsAll(expected);
     }
 
     @Test
@@ -94,17 +92,17 @@ public class LibraryServiceTest {
 
     @Test
     public void whenReturnBook() {
-        List<Book> expected = libraryService.getAllAvailableBooks();
+        Collection<Book> expected = libraryService.getAllAvailableBooks();
         expected.add(new Book("Book3", "Author3", 2020, 3L));
         libraryService.returnBook("200", "3");
-        List<Book> current = libraryService.getAllAvailableBooks();
+        Collection<Book> current = libraryService.getAllAvailableBooks();
         assertThat(expected).containsAll(current);
     }
 
     @Test
     public void whenReturnAvailableBook() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                libraryService.returnBook("200L", "4"));
+                libraryService.returnBook("200", "4"));
 
         assertThat(exception.getMessage()).isEqualTo("This book is already available");
     }

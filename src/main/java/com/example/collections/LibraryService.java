@@ -4,90 +4,85 @@ package com.example.collections;
 import java.util.*;
 
 public class LibraryService {
-    private Set<Book> books;
-    private Set<User> users;
-    private Map<User, List<Book>> userBooks;
+    private Map<String, Book> idToBookMap;
+    private Map<String, User> idToUserMap;
+    private Map<User, Set<Book>> userBooks;
+    private Map<Long, Long> reservedBooks;
 
-    public LibraryService(Set<Book> books, Set<User> users, Map<User, List<Book>> userBooks) {
-        this.books = books;
-        this.users = users;
+    public LibraryService(Map<String, Book> idToBookMap, Map<String, User> idToUserMap,
+                          Map<User, Set<Book>> userBooks) {
+        this.idToBookMap = idToBookMap;
+        this.idToUserMap = idToUserMap;
         this.userBooks = userBooks;
-    }
 
-    public Collection<Book> getAllBooks() {
-        return books;
-    }
-
-    public List<Book> getAllAvailableBooks() {
-        Set<Book> handleBooks = new HashSet<>();
-        for (List<Book> usersBook : userBooks.values()) {
-            handleBooks.addAll(usersBook);
-        }
-        List<Book> availableBook = new LinkedList<>();
-        for (Book book : books) {
-            if (!handleBooks.contains(book)) {
-                availableBook.add(book);
+        reservedBooks = new HashMap<>();
+        for (User user : userBooks.keySet()) {
+            for (Book book : userBooks.get(user)) {
+                reservedBooks.put(book.bookId(), user.userId());
             }
         }
-        return availableBook;
     }
 
-    public List<Book> getUserBooks(String userId) {
+    public Iterable<Book> getAllBooks() {
+        return idToBookMap.values();
+    }
+
+    public Collection<Book> getAllAvailableBooks() {
+        Set<Book> availableBooks = new LinkedHashSet<>();
+        for (Book book : idToBookMap.values()) {
+            if (!reservedBooks.containsKey(book.bookId())) {
+                availableBooks.add(book);
+            }
+        }
+        return availableBooks;
+    }
+
+    public Iterable<Book> getUserBooks(String userId) {
         Long boxedUserId = Long.valueOf(userId);
-        User findedUser = findUser(boxedUserId);
-        return userBooks.get(findedUser);
+        User foundUser = getUserOrThrow(boxedUserId);
+        return userBooks.get(foundUser);
     }
 
-    public void takeBook(Long userId, Long bookId) throws IllegalArgumentException {
-        Book findedBook = findBook(bookId);
-        if (!isBookAvailable(findedBook)) {
+    public void takeBook(Long userId, Long bookId) {
+        User foundUser = getUserOrThrow(userId);
+        Book foundBook = getBookOrThrow(bookId);
+        if (!isBookAvailable(foundBook)) {
             throw new IllegalArgumentException("This book is already taken");
         }
-        User findedUser = findUser(userId);
-        List<Book> books = userBooks.get(findedUser);
-        books.add(findedBook);
+        Set<Book> books = userBooks.get(foundUser);
+        books.add(foundBook);
+        reservedBooks.put(foundBook.bookId(), foundUser.userId());
     }
 
     public void returnBook(String userId, String bookId) {
-        Book removedBook = findBook(Long.valueOf(bookId));
+        Book removedBook = getBookOrThrow(Long.valueOf(bookId));
+        User user = getUserOrThrow(Long.valueOf(userId));
         if (isBookAvailable(removedBook)) {
             throw new IllegalArgumentException("This book is already available");
         }
-        User user = findUser(Long.valueOf(userId));
-        List<Book> currentUserBooks = userBooks.get(user);
+        Set<Book> currentUserBooks = userBooks.get(user);
         currentUserBooks.remove(removedBook);
+        reservedBooks.remove(removedBook.bookId());
     }
 
-    private User findUser(Long userId) throws IllegalArgumentException {
-        User findedUser = null;
-        for (User user : users) {
-            if (userId.equals(user.userId())) {
-                findedUser = user;
-                break;
-            }
-        }
-        if (findedUser == null) {
+    private User getUserOrThrow(Long userId) {
+        User foundUser = idToUserMap.get(String.valueOf(userId));
+        if (foundUser == null) {
             throw new IllegalArgumentException("Can't find user");
         }
-        return findedUser;
+        return foundUser;
     }
 
-    private Book findBook(Long bookId) throws IllegalArgumentException {
-        Book findedBook = null;
-        for (Book book : books) {
-            if (bookId.equals(book.bookId())) {
-                findedBook = book;
-                break;
-            }
+    private Book getBookOrThrow(Long bookId) {
+        Book foundBook = idToBookMap.get(String.valueOf(bookId));
+        if (foundBook == null) {
+            throw new IllegalArgumentException("Can't find book");
         }
-        if (findedBook == null) {
-            throw new NullPointerException("Can't find book");
-        }
-        return findedBook;
+        return foundBook;
     }
 
     private boolean isBookAvailable(Book book) {
-        List<Book> availableBooks = getAllAvailableBooks();
+        Collection<Book> availableBooks = getAllAvailableBooks();
         return availableBooks.contains(book);
     }
 }
