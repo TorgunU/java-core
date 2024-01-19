@@ -3,36 +3,34 @@ package com.example.collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class LibraryServiceTest {
+public class MapBasedLibraryServiceTest {
     private LibraryService libraryService;
 
     @BeforeEach
     public void setTestData() {
-        Map<String, Book> books = new HashMap<>();
-        books.put("1", new Book("Book1", "Author1", 2000, 1L));
-        books.put("2", new Book("Book2", "Author2", 2010, 2L));
-        books.put("3", new Book("Book3", "Author3", 2020, 3L));
-        books.put("4", new Book("Book4", "Author3", 2020, 4L));
+        List<Book> books = new LinkedList<>(Arrays.asList(
+                new Book("Book1", "Author1", 2000, 1L),
+                new Book("Book2", "Author2", 2010, 2L),
+                new Book("Book3", "Author3", 2020, 3L),
+                new Book("Book4", "Author3", 2020, 4L)));
 
-        Map<String, User> users = new HashMap<>();
-        users.put("100", new User("User1", 25, 100L));
-        users.put("200", new User("User2", 30, 200L));
+        List<User> users = new LinkedList<>(Arrays.asList(
+                new User("User1", 25, 100L),
+                new User("User2", 30, 200L)));
 
-        Map<User, Set<Book>> userBooks = new HashMap<>();
-        userBooks.put(
-                new User("User2", 30, 200L),
-                new HashSet<>(Arrays.asList(
-                        new Book("Book1", "Author1", 2000, 1L),
-                        new Book("Book2", "Author2", 2010, 2L),
-                        new Book("Book3", "Author3", 2020, 3L)
-        )));
+        libraryService = new MapBasedLibraryService(books, users);
 
-        libraryService = new LibraryService(books, users, userBooks);
+        libraryService.takeBook(200L, 1L);
+        libraryService.takeBook(200L, 2L);
+        libraryService.takeBook(200L, 3L);
     }
 
     @Test
