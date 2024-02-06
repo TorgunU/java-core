@@ -6,7 +6,8 @@ public class MultithreadingSiteVisitor {
     private SiteVisitCounter siteVisitCounter;
     private ExecutorService executorService;
     private CountDownLatch countDownLatch;
-    private long before;
+    private long startTime;
+    private long endTime;
 
     public MultithreadingSiteVisitor(SiteVisitCounter siteVisitCounter) {
         this.siteVisitCounter = siteVisitCounter;
@@ -15,7 +16,7 @@ public class MultithreadingSiteVisitor {
     public void visitMultithread(int numOfThreads) {
         executorService = Executors.newFixedThreadPool(numOfThreads);
         countDownLatch = new CountDownLatch(numOfThreads);
-        before = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
 
         for (int i = 0; i < numOfThreads; i++) {
             executorService.execute(() -> {
@@ -32,14 +33,12 @@ public class MultithreadingSiteVisitor {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
+            endTime = System.currentTimeMillis();
             executorService.shutdown();
         }
     }
 
-    public void getTotalTimeOfHandling() {
-        long after = System.currentTimeMillis();
-        System.out.println("Общее время обрбаботки всех потоков: " + (after - before));
-        System.out.println("Количество посещений: " + siteVisitCounter.getVisitCount());
-        before = 0;
+    public long getTotalTimeOfHandling() {
+        return endTime - startTime;
     }
 }

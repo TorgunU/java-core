@@ -1,20 +1,16 @@
 package org.example.multithreading1;
 
 public class SynchronizedBlockCounter implements SiteVisitCounter {
-    private Integer counter = new Integer(0);
+    private Integer counter = 0;
 
     @Override
     public synchronized void incrementVisitCount() {
         try {
             Thread.sleep(100);
-            int value = counter + 1;
-            counter = Integer.valueOf(value);
+            counter++;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-//        int value = counter + 1;
-//        counter = Integer.valueOf(value);
     }
 
     @Override
