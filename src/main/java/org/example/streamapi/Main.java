@@ -135,7 +135,7 @@ public class Main {
                 .flatMap(customer -> customer.orders().stream())
                 .filter(order -> order.products().stream()
                         .anyMatch(product -> product.category().equals(
-                                ProductCategory.ChildrenProducts.getLabel())))
+                                ProductCategory.CHILDREN_PRODUCTS.getLabel())))
                 .distinct()
                 .toList();
     }
@@ -144,7 +144,7 @@ public class Main {
         List<Product> toys = customers.stream()
                 .flatMap(customer -> customer.orders().stream())
                 .flatMap(order -> order.products().stream())
-                .filter(product -> product.category().equals(ProductCategory.Toys.getLabel()))
+                .filter(product -> product.category().equals(ProductCategory.TOYS.getLabel()))
                 .distinct()
                 .toList();
         Float sum = toys.stream()

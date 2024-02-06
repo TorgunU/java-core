@@ -2,8 +2,8 @@ package org.example.streamapi;
 
 public enum ProductCategory {
     BOOKS("Books"),
-    ChildrenProducts("Children's products"),
-    Toys("Toys");
+    CHILDREN_PRODUCTS("Children's products"),
+    TOYS("Toys");
 
     private final String label;
 
